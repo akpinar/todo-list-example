@@ -1,37 +1,48 @@
 import os
 from flask import Flask, request, jsonify
-
+from uuid import uuid4
 app = Flask(__name__)
 
 tasks = {}
 
 @app.route('/task', methods=['POST'])
 def create():
-    task_data = request.json
+    data = request.json
 
-    task_id = len(tasks) + 1  # Use UUID
-    tasks[task_id] = task_data
+    id = str(uuid4())
+    tasks[id] = data
 
-    return jsonify({'task_id': task_id, 'message': 'Task added successfully'})
+    return jsonify({'id': id, 'message': 'Task added successfully'}), 200
 
-@app.route('/get/<int:task_id>', methods=['GET'])
-def get(task_id):
-    if task_id in tasks:
-        return jsonify({'task_id': task_id, 'task_data': tasks[task_id]})
+@app.route('/task/<string:id>', methods=['GET'])
+def get(id):
+    if id in tasks:
+        return jsonify({'id': id, 'data': tasks[id]}), 200
     else:
         return jsonify({'message': 'Task not found'}), 404
 
 
-@app.route('/task/<int:task_id>', methods=['DELETE'])
-def delete(task_id):
-    # TODO: Add delete
-    pass
+@app.route('/task/<string:id>', methods=['DELETE'])
+def delete(id):
+    if id in tasks:
+        del tasks[id]
+        return jsonify({'message': 'Task deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'Task not found'}), 404
 
 
-@app.route('/task/<int:task_id>', methods=['PUT'])
-def update(task_id):
-    # TODO: Add put
-    pass
+@app.route('/task/<string:id>', methods=['PUT'])
+def update(id):
+    if id in tasks:
+        tasks[id] = request.json
+        return jsonify({'id': id, 'message': 'Task updated successfully'}), 200
+    else:
+        return jsonify({'message': 'Task not found'}), 404
+
+@app.route('/task', methods=['GET'])
+def get_all():
+    return jsonify({'data': tasks}), 200
+
 
 
 if __name__ == '__main__':
