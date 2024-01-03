@@ -1,8 +1,10 @@
 import os
 from flask import Flask, request, jsonify
 from uuid import uuid4
-app = Flask(__name__)
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
 tasks = {}
 
 @app.route('/task', methods=['POST'])
@@ -10,6 +12,7 @@ def create():
     data = request.json
 
     id = str(uuid4())
+    data["status"] = "1"
     tasks[id] = data
 
     return jsonify({'id': id, 'message': 'Task added successfully'}), 200
@@ -35,13 +38,15 @@ def delete(id):
 def update(id):
     if id in tasks:
         tasks[id] = request.json
+
         return jsonify({'id': id, 'message': 'Task updated successfully'}), 200
     else:
         return jsonify({'message': 'Task not found'}), 404
 
-@app.route('/task', methods=['GET'])
-def get_all():
-    return jsonify({'data': tasks}), 200
+@app.route('/task/search/<int:status>', methods=['GET'])
+def search(status):
+    filtered_items = {key: value for key, value in tasks.items() if value.get('status') == str(status)}
+    return jsonify({'data': filtered_items}), 200
 
 
 

@@ -1,20 +1,15 @@
-// src/router.js
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-
-// Import your components
-import HelloWorld from './components/HelloWorld.vue';
+import HomePage from "./components/HomePage.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
-  { path: '/', component: HelloWorld },
-];
+const routes = [{ path: "/", component: HomePage }];
 
 const router = new VueRouter({
   routes,
-  mode: 'history', // Use history mode for clean URLs (optional)
+  mode: "history",
 });
 
 export default router;
